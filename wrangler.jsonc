@@ -1,0 +1,6 @@
+{
+  "name": "health-edu-bot",
+  "main": "bot-worker.js",
+  "compatibility_date": "2026-11-20",
+  "ai": {"binding": "AI"}
+}
