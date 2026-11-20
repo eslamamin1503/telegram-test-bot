@@ -14,15 +14,26 @@ assert.equal(calls.at(-1).payload.reply_markup.inline_keyboard.length,4);
 assert.ok(calls.at(-1).payload.text.includes('بيانات صحية شخصية'));
 for(const disease of ['diabetes','pressure','anemia','asthma']){
  await send({callback_query:{id:'test',message:{chat:{id:1}},data:'d:'+disease}});
- assert.equal(calls.at(-1).payload.reply_markup.inline_keyboard.length,3);
- for(let n=0;n<3;n++){
+ assert.equal(calls.at(-1).payload.reply_markup.inline_keyboard.filter(row=>row[0].callback_data.startsWith("q:")).length,5);
+ for(let n=0;n<20;n++){
   await send({callback_query:{id:'test',message:{chat:{id:1}},data:`q:${disease}:${n}`}});
-  assert.ok(calls.at(-1).payload.text.includes('محتوى تجريبي'));
+  assert.ok(calls.at(-1).payload.text.includes('مش بديل'));
  }
 }
+for (const disease of ['diabetes','pressure','anemia','asthma']) {
+ const seen=[];
+ for(let page=0;page<4;page++) {
+  await send({callback_query:{id:'page',message:{chat:{id:1}},data:`p:${disease}:${page}`}});
+  const qs=calls.at(-1).payload.reply_markup.inline_keyboard.flat().filter(b=>b.callback_data.startsWith('q:'));
+  assert.equal(qs.length,5);seen.push(...qs.map(q=>q.callback_data));
+ }
+ assert.equal(new Set(seen).size,20);
+}
+await send({callback_query:{id:'home',message:{chat:{id:1}},data:'home'}});
+assert.equal(calls.at(-1).payload.reply_markup.inline_keyboard.length,4);
 await send({message:{chat:{id:1,type:'private'},text:'إيه فوائد المشي؟'}});
 assert.ok(calls.some(c=>c.payload.text?.includes('إجابة توعوية')));
-console.log('PASS: webhook auth, 4 diseases, 12 answers, privacy notice, AI reply path');
+console.log('PASS: webhook auth, 4 diseases, 80 answers, privacy notice, AI reply path');
 let fallbackUsed=false;
 env.AI={run:async()=>{fallbackUsed=true;return {response:'رد احتياطي للتوعية'}}};
 globalThis.fetch=async(url,opt)=>{calls.push({url,payload:JSON.parse(opt?.body||'{}')});if(url.includes('googleapis'))return Response.json({error:'quota limit'},{status:429});return Response.json({ok:true,result:{message_id:11}})};
