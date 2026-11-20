@@ -4,12 +4,12 @@ JavaScript Telegram webhook bot deployed on Cloudflare Workers.
 
 ## Features
 
-- Egyptian Arabic interface for adults aged 18+.
+- Egyptian Arabic interface for a graduation-project demo. The intended audience remains adult university students, as required by the AI provider's terms.
 - Four example topics: diabetes, high blood pressure, anemia and asthma.
 - Twenty ready-made questions and answers per topic, eighty total.
-- Five questions per page, with Previous/Next and return-to-diseases buttons.
+- All twenty questions are full-width buttons in a persistent Telegram reply keyboard, plus a return-to-diseases button. No pagination.
 - Free-text general health education using Gemini, then Cloudflare Workers AI if Gemini fails or reaches its limit.
-- Educational-only and privacy notices. Users should not enter identifying or personal health information.
+- One short educational footer, a brief no-personal-data note on start, and fuller details under /privacy.
 - Telegram webhook requests are checked against a secret header derived from the bot token.
 
 The medical examples are placeholders, not reviewed patient guidance. Replace them with approved content before use beyond a test.
@@ -39,7 +39,25 @@ Model availability and free quotas can change. This deployment has no paid-plan 
 
 Run: node test-worker.mjs
 
-Tests use mock Telegram/AI responses. They check webhook authentication, the four menus, all eighty ready answers, pagination covering all twenty questions per topic, the privacy notice, the free-text answer flow and fallback after a primary-provider HTTP 429. These tests do not replace a real Telegram conversation check.
+Tests use mock Telegram/AI responses. They check webhook authentication, the four menus, all eighty text-button answers, persistent full-width keyboards, compatibility with older inline buttons, deterministic command handlers, the privacy note, the free-text answer flow and fallback after a primary-provider HTTP 429. These tests do not replace a real Telegram conversation check.
+
+## Telegram commands and keyboard
+
+Telegram has the following command menu registered, with Arabic descriptions:
+
+- /start: start the bot and show the disease keyboard.
+- /menu: return to the disease keyboard.
+- /help: explain how to use the question buttons and AI.
+- /about: describe the test bot.
+- /privacy: explain external AI processing and the no-personal-data rule.
+
+The chat menu button is configured as a commands menu. A client may need the chat reopened before it shows newly registered commands. Send /start or /menu after an update to load the current reply keyboard. If the keyboard is hidden, reopen it using Telegram's keyboard icon.
+
+The question buttons send their visible text as messages. Exact matches return the ready answer without an AI call. Free text uses the AI providers. The keyboard stays available after ready answers. Earlier inline buttons are still handled for compatibility.
+
+There is no admin role or admin-only command. All private-chat users have the same features. A command not in the list shows a help message rather than being sent to AI.
+
+To change the menu later, the bot owner can use BotFather's /setcommands and update the corresponding command handlers in bot-worker.js. The temporary registration route used at deployment is not part of the shipped code.
 
 ## Medical sources for the example Q&A
 
