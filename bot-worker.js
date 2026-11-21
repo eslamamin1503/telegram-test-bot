@@ -718,7 +718,7 @@ async function showDisease(tg, chatId, id) {
 
 async function showAnswer(tg, chatId, id, item) {
   selectedDisease.set(chatId,id);
-  await tg("sendMessage", {chat_id:chatId,text:`س: ${item.q}\n\nج: ${item.a}${DISCLAIMER}`,reply_markup:questionsKeyboard(id)});
+  await tg("sendMessage", {chat_id:chatId,text:`${item.a}${DISCLAIMER}`,reply_markup:questionsKeyboard(id)});
 }
 
 const AR_STOP = new Set(["في","من","علي","الي","عن","او","لا","ما","هل","ايه","بعد","قبل","عند","مع","كل","انا","هو","هي","ده","دي","اللي","ليه","ازاي","كام","بكام","ممكن","لازم","خلال","اثناء","غير","بين","حتي","اذا","كان","يكون","مش","يا","اي","منها","منه","فيها","فيه","عليها","عليه","لها","له","دون","عشان","لو","لما","نحو","اول","اخر","اكثر","اقل","جدا","كمان","بس","طب","بتاع","بتكون","بتبقي","بيحصل","بتحصل","عايز","عايزة"]);
