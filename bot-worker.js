@@ -876,11 +876,6 @@ async function handleUpdate(update, env, tg) {
       await showDisease(tg,chatId,id);
       return;
     }
-    const item=disease.qa.find(item=>item.q===text);
-    if (item) {
-      await showAnswer(tg,chatId,id,item);
-      return;
-    }
   }
 
   if (command) {
